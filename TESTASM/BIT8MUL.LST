@@ -1,0 +1,54 @@
+00 04F0         sst #0f0h
+02 0902         mov R1, #02h
+04 0A05         mov R2, #05h
+            
+            mymul:
+06 0D           test R1
+07 143B         jz  mulZero ;乘以0直接结束
+            
+09 0800         mov R0, #00h
+0B 20           push R0
+0C 2401         inc #01h
+0E 21           push R1
+0F 2401         inc #01h
+11 0900         mov R1, #00h    ;清零结果单元
+            
+13 0E           test R2
+14 143B         jz  mulZero ;乘0
+            calc:
+16 0E           test R2
+17 1441         jz  mend
+19 12           mov A, R2
+1A 2801         and A, #01h
+1C 142C         jz  change
+1E 2C01         dec #01h
+20 33           pop R3
+21 11           mov A, R1
+22 37           add A, R3
+23 39           mov R1, A
+24 2C01         dec #01h
+26 33           pop R3
+27 10           mov A, R0
+28 3F           adc A, R3
+29 38           mov R0, A
+2A 2402         inc #02h ;复位
+            change:
+2C 2C01         dec #01h;找到低8位
+2E 33           pop R3  ;出栈低8位
+2F 43           rl  R3  ;左移
+30 23           push R3 ;压栈
+31 2C01         dec #01h  ;栈指针下移
+33 33           pop R3  ;出栈高8位
+34 47           rlc R3  ;带进位左移
+35 23           push R3 ;压栈高8位
+36 2402         inc #02h ;栈顶指向低8位
+38 4A           rr  R2  ;乘数右移
+39 1C16         jmp calc
+            
+            mulZero:
+3B 0800         mov R0, #00h
+3D 0900         mov R1, #00h
+3F 1C41         jmp mend
+            
+            mend:
+                end
