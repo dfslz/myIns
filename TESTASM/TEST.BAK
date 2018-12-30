@@ -1,0 +1,6 @@
+mov R1, #080h
+mov R0, #00h
+
+rl R1
+rl R1
+rlc R0

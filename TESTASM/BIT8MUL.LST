@@ -1,5 +1,5 @@
 00 04F0         sst #0f0h
-02 09F0         mov R1, #0f0h
+02 0908         mov R1, #08h
 04 0A02         mov R2, #02h
             
             mymul:

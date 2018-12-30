@@ -1,5 +1,5 @@
     sst #0f0h
-    mov R1, #0f0h
+    mov R1, #08h
     mov R2, #02h
 
 mymul:
