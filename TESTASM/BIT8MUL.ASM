@@ -1,6 +1,6 @@
     sst #0f0h
-    mov R1, #02h
-    mov R2, #05h
+    mov R1, #0f0h
+    mov R2, #02h
 
 mymul:
     test R1

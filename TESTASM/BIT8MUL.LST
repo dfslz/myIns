@@ -1,6 +1,6 @@
 00 04F0         sst #0f0h
-02 0902         mov R1, #02h
-04 0A05         mov R2, #05h
+02 09F0         mov R1, #0f0h
+04 0A02         mov R2, #02h
             
             mymul:
 06 0D           test R1
