@@ -1,0 +1,104 @@
+00 04F0         sst #0f0h
+02 09FF         mov R1, #0ffh
+04 0A03         mov R2, #03h
+            
+06 2406         inc #06h    ;保存符号位
+08 0B80         mov R3, #080h
+0A 11           mov A, R1
+0B 1B           and A, R3
+0C 3B           mov R3, A   ;被乘数的符号位
+0D 1415         jz  c1ok    ;不需要去补码
+0F 11           mov A, R1
+10 0901         mov R1, #01h
+12 58           not A
+13 35           add A, R1
+14 39           mov R1, A
+            c1ok:
+15 23           push R3
+16 0B80         mov R3, #080h
+18 12           mov A, R2
+19 1B           and A, R3
+1A 1422         jz  c2ok    ;不需要取补
+1C 12           mov A, R2
+1D 0A01         mov R2, #01h
+1F 58           not A
+20 36           add A, R2
+21 3A           mov R2, A
+            c2ok:
+22 33           pop R3
+23 37           add A, R3   ;符号位相加,0+0=0,1+1=0,0+1=1+0=1
+24 3B           mov R3, A
+25 23           push R3     ;保护符号位
+26 2C06         dec #06h    ;恢复栈地址
+            
+            mymul:
+28 0D           test R1
+29 145D         jz  mulZero ;乘以0直接结束
+            
+2B 0800         mov R0, #00h
+2D 20           push R0
+2E 2401         inc #01h
+30 21           push R1
+31 2401         inc #01h
+33 0900         mov R1, #00h    ;清零结果单元
+            
+35 0E           test R2
+36 145D         jz  mulZero ;乘0
+            calc:
+38 0E           test R2
+39 1463         jz  mend
+3B 12           mov A, R2
+3C 2801         and A, #01h
+3E 144E         jz  change
+40 2C01         dec #01h
+42 33           pop R3
+43 11           mov A, R1
+44 37           add A, R3
+45 39           mov R1, A
+46 2C01         dec #01h
+48 33           pop R3
+49 10           mov A, R0
+4A 3F           adc A, R3
+4B 38           mov R0, A
+4C 2402         inc #02h ;复位
+            change:
+4E 2C01         dec #01h;找到低8位
+50 33           pop R3  ;出栈低8位
+51 43           rl  R3  ;左移
+52 23           push R3 ;压栈
+53 2C01         dec #01h  ;栈指针下移
+55 33           pop R3  ;出栈高8位
+56 47           rlc R3  ;带进位左移
+57 23           push R3 ;压栈高8位
+58 2402         inc #02h ;栈顶指向低8位
+5A 4A           rr  R2  ;乘数右移
+5B 1C38         jmp calc
+            
+            mulZero:
+5D 0800         mov R0, #00h
+5F 0900         mov R1, #00h
+61 1C7D         jmp over
+            
+            mend:
+63 04F0         sst #0f0h
+65 2406         inc #06h
+67 33           pop R3
+68 13           mov A, R3
+69 2880         and A, #80h
+6B 147D         jz  over    ;符号位为0则结束
+6D 11           mov A, R1
+6E 58           not A
+6F 39           mov R1, A
+70 10           mov A, R0
+71 58           not A
+72 38           mov R0, A   ;取反
+73 11           mov A, R1
+74 0901         mov R1, #01h
+76 35           add A, R1
+77 39           mov R1, A
+78 10           mov A, R0
+79 0800         mov R0, #00h
+7B 3C           adc A, R0
+7C 38           mov R0, A
+            over:
+                end

@@ -1,52 +1,57 @@
 00 0810         mov R0, #10h
 02 0900         mov R1, #00h    ;被除数16位
-04 0AFF         mov R2, #0ffh    ;除数8位
+04 0A00         mov R2, #00h    ;除数8位
 06 0B08         mov R3, #08h    ;用于判断除法是否结束
-08 10           mov A, R0
-09 4E           sub A, R2
-0A 600E         jc  lp
-0C 1C34         jmp overflow   ;被除数高8位大于除数，结果必定溢出
+08 0E           test R2
+09 143D         jz  divZero
+0B 10           mov A, R0
+0C 4E           sub A, R2
+0D 6011         jc  lp  ;有借位，不会溢出
+0F 1C37         jmp overflow   ;被除数高8位大于除数，结果必定溢出
             lp:
-0E 12           mov A, R2
-0F 4E           sub A, R2
+11 12           mov A, R2
+12 4E           sub A, R2
                 ;上面两步只为清0进位
-10 41           rl  R1
-11 44           rlc R0
-12 602D         jc  borrow  ;移位后有借位，必定大于除数
-14 13           mov A, R3
-15 0B01         mov R3, #01h
-17 4F           sub A, R3
-18 3B           mov R3, A   ;计数器减一
-19 10           mov A, R0
-1A 4E           sub A, R2
-1B 6028         jc  isOver  ;移位后没有借位，但是相减后有借位，必定小于除数
+13 41           rl  R1
+14 44           rlc R0
+15 6030         jc  borrow  ;移位后有借位，必定大于除数
+17 13           mov A, R3
+18 0B01         mov R3, #01h
+1A 4F           sub A, R3
+1B 3B           mov R3, A   ;计数器减一
+1C 10           mov A, R0
+1D 4E           sub A, R2
+1E 602B         jc  isOver  ;移位后没有借位，但是相减后有借位，必定小于除数
             ok:
-1D 12           mov A, R2
-1E 4E           sub A, R2
+20 12           mov A, R2
+21 4E           sub A, R2
                 ;上面两步也是清除进位
-1F 10           mov A, R0
-20 4E           sub A, R2
-21 38           mov R0, A
-22 11           mov A, R1
-23 5001         or  A, #01h ;商1
-25 39           mov R1, A
-26 1C28         jmp isOver
+22 10           mov A, R0
+23 4E           sub A, R2
+24 38           mov R0, A
+25 11           mov A, R1
+26 5001         or  A, #01h ;商1
+28 39           mov R1, A
+29 1C2B         jmp isOver
             isOver:
-28 0F           test R3
-29 143A         jz  dend    ;R3为0则除法结束
-2B 1C0E         jmp lp      ;未结束则重复循环
+2B 0F           test R3
+2C 1441         jz  dend    ;R3为0则除法结束
+2E 1C11         jmp lp      ;未结束则重复循环
             
             borrow: ;处理有借位的时候计数器依然需要减一
-2D 13           mov A, R3
-2E 0B01         mov R3, #01h
-30 4F           sub A, R3
-31 3B           mov R3, A
-32 1C1D         jmp ok
+30 13           mov A, R3
+31 0B01         mov R3, #01h
+33 4F           sub A, R3
+34 3B           mov R3, A
+35 1C20         jmp ok
             
             overflow:
-34 08FF         mov R0, #0ffh
-36 09FF         mov R1, #0ffh
-38 1C3A         jmp dend
+37 08FF         mov R0, #0ffh
+39 09FF         mov R1, #0ffh
+3B 1C41         jmp dend
             
+            divZero:
+3D 08FF         mov R0, #0ffh
+3F 09FF         mov R1, #0ffh
             dend:
                 end

@@ -1,10 +1,12 @@
     mov R0, #10h
     mov R1, #00h    ;被除数16位
-    mov R2, #0ffh    ;除数8位
+    mov R2, #00h    ;除数8位
     mov R3, #08h    ;用于判断除法是否结束
+    test R2
+    jz  divZero
     mov A, R0
     sub A, R2
-    jc  lp
+    jc  lp  ;有借位，不会溢出
     jmp overflow   ;被除数高8位大于除数，结果必定溢出
 lp:
     mov A, R2
@@ -48,5 +50,8 @@ overflow:
     mov R1, #0ffh
     jmp dend
 
+divZero:
+    mov R0, #0ffh
+    mov R1, #0ffh
 dend:
     end
