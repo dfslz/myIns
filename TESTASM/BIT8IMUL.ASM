@@ -29,7 +29,7 @@ c2ok:
     add A, R3   ;符号位相加,0+0=0,1+1=0,0+1=1+0=1
     mov R3, A
     push R3     ;保护符号位
-    dec #06h    ;恢复栈地址
+    sst #f0h    ;恢复栈地址
 
 mymul:
     test R1
